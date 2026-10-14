@@ -189,6 +189,15 @@ pub(crate) fn simple_object_event_target_add_listener<'s>(
     args: &v8::FunctionCallbackArguments<'s>,
     slot_name: &str,
 ) {
+    simple_object_event_target_add_listener_for_target(scope, args, args.this(), slot_name);
+}
+
+pub(crate) fn simple_object_event_target_add_listener_for_target<'s>(
+    scope: &mut v8::PinScope<'s, '_>,
+    args: &v8::FunctionCallbackArguments<'s>,
+    target: v8::Local<'s, v8::Object>,
+    slot_name: &str,
+) {
     let Some(call) = parse_listener_args::<AddEventListenerArgs>(scope, args, "addEventListener")
     else {
         return;
@@ -197,7 +206,6 @@ pub(crate) fn simple_object_event_target_add_listener<'s>(
         return;
     };
     let listener = simple_object_event_listener_parts(scope, listener);
-    let target = args.this();
     simple_object_event_target_register_resolved_listener(
         scope,
         target,
@@ -306,6 +314,15 @@ pub(crate) fn simple_object_event_target_remove_listener<'s>(
     args: &v8::FunctionCallbackArguments<'s>,
     slot_name: &str,
 ) {
+    simple_object_event_target_remove_listener_for_target(scope, args, args.this(), slot_name);
+}
+
+pub(crate) fn simple_object_event_target_remove_listener_for_target<'s>(
+    scope: &mut v8::PinScope<'s, '_>,
+    args: &v8::FunctionCallbackArguments<'s>,
+    target: v8::Local<'s, v8::Object>,
+    slot_name: &str,
+) {
     let Some(call) =
         parse_listener_args::<RemoveEventListenerArgs>(scope, args, "removeEventListener")
     else {
@@ -315,7 +332,6 @@ pub(crate) fn simple_object_event_target_remove_listener<'s>(
         return;
     };
     let listener = listener.value(scope);
-    let target = args.this();
     simple_object_event_remove_listener_value_for_type(
         scope,
         target,
